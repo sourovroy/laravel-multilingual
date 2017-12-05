@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class PostController extends Controller
 {
@@ -14,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::where('language_code', '=', app()->getLocale())->get();
         return view('index', compact('posts'));
     }
 
@@ -54,7 +55,26 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return view('show', compact('post'));
+        $getLocale = app()->getLocale();
+        $addLangPost = false;
+        
+        if($post->language_code != $getLocale){
+            $addLangPost = true;
+
+            if($post->source_language_id){
+                $langPost = Post::select('id', 'language_code')->where('language_code', '=', $getLocale)->where('id', '=', $post->source_language_id)->first();
+            }else{
+                $langPost = Post::select('id', 'language_code')->where('language_code', '=', $getLocale)->where('source_language_id', '=', $post->id)->first();
+            }
+            
+            if($langPost){
+                $psUrl = route('posts.show', ['post' => $langPost]);
+                $toUrl = LaravelLocalization::localizeURL($psUrl, $langPost->language_code);
+                return redirect($toUrl);
+            }
+        }
+
+        return view('show', compact('post', 'addLangPost'));
     }
 
     /**
@@ -65,7 +85,12 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        $addLangPost = false;
+        if($post->language_code != app()->getLocale()){
+            $addLangPost = true;
+        }
+
+        return view('edit', compact('post', 'addLangPost'));
     }
 
     /**
@@ -77,7 +102,24 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $request->validate([
+            'title' => 'required|min:2'
+        ]);
+
+        $post->title = $request->get('title');
+        $post->content = $request->get('content');
+        $post->language_code = $request->get('language_code');
+
+        if($request->has('source_language_id')){
+            $post = Post::create($request->all());
+        }else{
+            $post->save();
+        }
+
+        $enUrl = route('posts.show', ['post' => $post]);
+        $toUrl = LaravelLocalization::localizeURL($enUrl, $post->language_code);
+
+        return redirect($toUrl);
     }
 
     /**

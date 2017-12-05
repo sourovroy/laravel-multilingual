@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -29,19 +29,19 @@
 		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
-					<a class="nav-link" href="/">Home</a>
+					<a class="nav-link" href="/{{ ($current_local == 'en') ? '' : $current_local }}">@lang('content.Home')</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/create">Create Post</a>
+					<a class="nav-link" href="/create">@lang('content.CreatePost')</a>
 				</li>
 			</ul>
+			
 			<ul class="navbar-nav form-inline my-2 my-lg-0">
-				<li class="nav-item">
-					<a class="nav-link" href="">English</a>
+				@foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+				<li class="nav-item {{ ($localeCode == $current_local) ? 'active' : '' }}" data-langcode="{{ $localeCode }}">
+					<a class="nav-link" href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], false) }}">{{ $properties['native'] }}</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="">Danish</a>
-				</li>
+				@endforeach
 			</ul>
 		</div>
 	</nav>
@@ -56,7 +56,7 @@
 	<!--/.container-->
 
 	<footer class="text-center">
-		<p>&copy; Company 2017</p>
+		<p>&copy; @lang('content.Company') {{ date('Y') }}</p>
 	</footer>
 
 </body>

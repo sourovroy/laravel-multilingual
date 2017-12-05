@@ -11,7 +11,7 @@
 			<p>{{ $post->content }}</p>
 			<div>
 				<a class="btn btn-secondary" href="{{ route('posts.show', ['post' => $post->id]) }}" role="button">
-					View details &raquo;
+					@lang('content.Viewdetails') &raquo;
 				</a>
 			</div>
 		</div>

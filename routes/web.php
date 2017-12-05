@@ -11,9 +11,16 @@
 |
 */
 
-Route::get('/', 'PostController@index');
 
+Route::group(['prefix' => LaravelLocalization::setLocale()], function(){
 
-Route::get('/create', 'PostController@create');
+	Route::get('/', 'PostController@index');
+	
+	Route::get('/create', 'PostController@create');
+	Route::get('/posts/{post}', 'PostController@show')->name('posts.show');
+	Route::get('/posts/{post}/edit', 'PostController@edit')->name('posts.edit');
+
+});
+
 Route::post('/store', 'PostController@store');
-Route::get('/posts/{post}', 'PostController@show')->name('posts.show');
+Route::patch('/posts/{post}', 'PostController@update')->name('posts.update');

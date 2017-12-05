@@ -9,24 +9,25 @@
 			{{ csrf_field() }}
 
 			<div class="form-group">
-				<label for="title">Title</label>
-				<input type="text" class="form-control" id="title" placeholder="Title" name="title">
+				<label for="title">@lang('content.Title')</label>
+				<input type="text" class="form-control" id="title" name="title">
 			</div>
+
 			<div class="form-group">
-				<label for="content">Content</label>
+				<label for="content">@lang('content.Content')</label>
 				<textarea class="form-control" id="content" rows="3" name="content"></textarea>
 			</div>
+
 			<div class="form-group">
-				<label>Select Language</label>
-				<select class="form-control" name="language_code">
-					<option value="en">English</option>
-					<option value="da">Danish</option>
+				<label>@lang('content.SelectLanguage')</label>
+				<select class="form-control" name="language_code">					
+					@foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+						<option value="{{ $localeCode }}" {{ ($localeCode == $current_local) ? 'selected="selected"' : '' }} >{{ $properties['native'] }}</option>
+					@endforeach
 				</select>
 			</div>
 
-			<input type="hidden" name="source_language_id" value="">
-
-			<button class="btn btn-primary">Save</button>
+			<button class="btn btn-primary">@lang('content.Save')</button>
 		</form>
 	</div>
 </div>
